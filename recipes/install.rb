@@ -61,6 +61,10 @@ link "#{node['kibana']['install_dir']}/current/app/dashboards/default.json" do
   only_if { !File.symlink?("#{node['kibana']['install_dir']}/current/app/dashboards/default.json") }
 end
 
+Chef::Log.info "DEBUG node['kibana']['webserver']  #{node['kibana']['webserver']}"
+Chef::Log.info  "DEBUG node['kibana']['install_dir'] #{node['kibana']['install_dir']}"
+Chef::Log.info  "DEBUG node['kibana']['es_server'] #{node['kibana']['es_server']}
+
 kibana_web 'kibana' do
   type node['kibana']['webserver']
   docroot "#{node['kibana']['install_dir']}/current"
