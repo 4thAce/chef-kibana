@@ -63,7 +63,7 @@ end
 
 Chef::Log.info "DEBUG node['kibana']['webserver']  #{node['kibana']['webserver']}"
 Chef::Log.info  "DEBUG node['kibana']['install_dir'] #{node['kibana']['install_dir']}"
-Chef::Log.info  "DEBUG node['kibana']['es_server'] #{node['kibana']['es_server']}
+Chef::Log.info  "DEBUG node['kibana']['es_server'] #{node['kibana']['es_server']}"
 
 kibana_web 'kibana' do
   type node['kibana']['webserver']
