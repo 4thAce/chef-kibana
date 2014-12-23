@@ -11,6 +11,8 @@ require 'chef/mixin/shell_out'
 require 'chef/mixin/language'
 include Chef::Mixin::ShellOut
 
+use_inline_resources
+
 def load_current_resource
   lolno = new_resource.clone
 end
@@ -47,14 +49,13 @@ action :create do
       listen_port resources[:listen_port]
       es_scheme resources[:es_scheme]
     end
-    # new_resource.updated_by_last_action(wa.updated_by_last_action?)
 
   when 'nginx'
     node.set['nginx']['default_site_enabled'] = resources[:default_site_enabled]
     node.set['nginx']['install_method'] = node['kibana']['nginx']['install_method']
     @run_context.include_recipe 'nginx'
 
-    ngtp = template "#{node['nginx']['dir']}/sites-available/#{resources[:name]}" do
+    template "#{node['nginx']['dir']}/sites-available/#{resources[:name]}" do
       source resources[:template]
       cookbook resources[:template_cookbook]
       notifies :reload, 'service[nginx]'
@@ -66,13 +67,13 @@ action :create do
         kibana_dir: resources[:docroot],
         listen_address: resources[:listen_address],
         listen_port: resources[:listen_port],
-        es_scheme: resources[:es_scheme]
+        es_scheme: resources[:es_scheme],
+        kibana_port: resources[:kibana_port]
       )
     end
-    new_resource.updated_by_last_action(ngtp.updated_by_last_action?)
-    ngsi = nginx_site resources[:name]
-    # new_resource.updated_by_last_action(ngsi.updated_by_last_action?)
-
+    nginx_site resources[:name]
+  when ''
+    # do nothing
   else
     Chef::Application.fatal!("Unknown type: #{resources[:type]}")
   end
@@ -95,7 +96,9 @@ def kibana_resources
     es_server: new_resource.es_server,
     es_port: new_resource.es_port,
     es_scheme: new_resource.es_scheme,
-    default_site_enabled: new_resource.default_site_enabled
+    default_site_enabled: new_resource.default_site_enabled,
+    version: new_resource.version,
+    kibana_port: new_resource.kibana_port
   }
   kb
 end
